@@ -555,10 +555,10 @@ rm -rf ~/Library/Application\ Support/Claude/cache
 
 ### Current Version: 1.0.0
 
-✅ Core MCP protocol implementation  
-✅ Worker monitoring tools  
-✅ Earnings tracking  
-✅ Basic caching  
+- [ ]  Core MCP protocol implementation  
+- [ ]  Worker monitoring tools  
+- [ ]  Earnings tracking  
+- [ ]  Basic caching  
 
 ### Version 1.1.0 (Q1 2025)
 
