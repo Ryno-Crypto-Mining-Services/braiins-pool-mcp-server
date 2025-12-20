@@ -710,7 +710,9 @@ If you use this MCP server in research or production, please cite:
 ## Stay Connected
 
 - **Website**: [rynocrypto.com](https://rynocrypto.com)
-- **Twitter**: [@RynoCryptoServ](https://twitter.com/RynoCryptoServ)
+- **Nostr**: [ryno@rynocrypto.com](https://njump.me/npub1wdh79svttcryarz2nt7m9mz7wy5gty8fua67d7pcape586rg246q4tgv9u)
+- **BlueSky**: [RynoMining](https://bsky.app/profile/rynomining.bsky.social)
+- **X/Twitter**: [@RynoMining](https://x.com/RynoMining)
 - **GitHub**: [Ryno-Crypto-Mining-Services](https://github.com/Ryno-Crypto-Mining-Services)
 - **LinkedIn**: [Company Page](https://linkedin.com/company/ryno-crypto-mining)
 
