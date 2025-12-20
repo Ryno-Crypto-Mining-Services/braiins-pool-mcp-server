@@ -13,6 +13,8 @@ import type { GetUserOverviewResponse } from '../schemas/getUserOverviewResponse
 import type { ListWorkersResponse } from '../schemas/listWorkersResponse.js';
 import type { GetWorkerDetailsResponse } from '../schemas/getWorkerDetailsResponse.js';
 import type { GetWorkerHashrateResponse } from '../schemas/getWorkerHashrateResponse.js';
+import type { GetUserRewardsResponse } from '../schemas/getUserRewardsResponse.js';
+import type { GetPoolStatsResponse } from '../schemas/getPoolStatsResponse.js';
 
 /**
  * Braiins API Client
@@ -202,6 +204,37 @@ export class BraiinsClient {
         `/workers/${encodeURIComponent(workerId)}/hashrate`,
         { params }
       )
+    );
+  }
+
+  /**
+   * Get user rewards history
+   *
+   * Returns time-series of rewards for the authenticated account.
+   * Supports time range filtering and granularity options.
+   *
+   * @param params - Query parameters (from, to, granularity)
+   * @see API.md Section 5.2
+   */
+  async getUserRewards(
+    params: Record<string, string> = {}
+  ): Promise<GetUserRewardsResponse> {
+    return this.retryWithBackoff(() =>
+      this.client.get<GetUserRewardsResponse>('/user/rewards', { params })
+    );
+  }
+
+  /**
+   * Get pool statistics
+   *
+   * Returns global Braiins Pool statistics including hashrate,
+   * active workers, last block found, and luck metrics.
+   *
+   * @see API.md Section 7.1
+   */
+  async getPoolStats(): Promise<GetPoolStatsResponse> {
+    return this.retryWithBackoff(() =>
+      this.client.get<GetPoolStatsResponse>('/pool/stats')
     );
   }
 }

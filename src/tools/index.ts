@@ -140,6 +140,8 @@ import { getUserOverviewTool } from './getUserOverview.js';
 import { listWorkersTool } from './listWorkers.js';
 import { getWorkerDetailsTool } from './getWorkerDetails.js';
 import { getWorkerHashrateTool } from './getWorkerHashrate.js';
+import { getUserRewardsTool } from './getUserRewards.js';
+import { getPoolStatsTool } from './getPoolStats.js';
 
 // Register all tools
 registerTool(getUserOverviewTool);
@@ -153,5 +155,11 @@ tools.push(getWorkerDetailsTool);
 
 registerTool(getWorkerHashrateTool);
 tools.push(getWorkerHashrateTool);
+
+registerTool(getUserRewardsTool);
+tools.push(getUserRewardsTool);
+
+registerTool(getPoolStatsTool);
+tools.push(getPoolStatsTool);
 
 logger.debug('Tool registry initialized', { toolCount: tools.length });
