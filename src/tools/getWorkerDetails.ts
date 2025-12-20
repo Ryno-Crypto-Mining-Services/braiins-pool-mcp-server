@@ -13,7 +13,7 @@ import {
   GetWorkerDetailsResponseSchema,
   type GetWorkerDetailsResponse,
 } from '../schemas/getWorkerDetailsResponse.js';
-import { getBraiinsClient } from '../api/braiinsClient.js';
+import { getCachedBraiinsClient } from '../api/cachedBraiinsClient.js';
 import { ValidationError, toBraiinsError } from '../utils/errors.js';
 import { logger } from '../utils/logger.js';
 import type { ToolDefinition } from './index.js';
@@ -171,7 +171,7 @@ async function handler(args: Record<string, unknown>): Promise<CallToolResult> {
   try {
     // Step 2: Call API
     logger.debug('Fetching worker details from API', { workerId });
-    const client = getBraiinsClient();
+    const client = getCachedBraiinsClient();
     const rawData = await client.getWorkerDetails(workerId);
 
     // Step 3: Validate response matches expected schema

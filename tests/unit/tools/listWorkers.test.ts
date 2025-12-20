@@ -3,19 +3,16 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  ListWorkersInputSchema,
-  toApiParams,
-} from '../../../src/schemas/listWorkersInput.js';
+import { ListWorkersInputSchema, toApiParams } from '../../../src/schemas/listWorkersInput.js';
 import {
   ListWorkersResponseSchema,
   WorkerSchema,
 } from '../../../src/schemas/listWorkersResponse.js';
 
-// Mock the braiinsClient module
-vi.mock('../../../src/api/braiinsClient.js', () => ({
-  getBraiinsClient: vi.fn(),
-  resetBraiinsClient: vi.fn(),
+// Mock the cachedBraiinsClient module
+vi.mock('../../../src/api/cachedBraiinsClient.js', () => ({
+  getCachedBraiinsClient: vi.fn(),
+  resetCachedBraiinsClient: vi.fn(),
 }));
 
 // Mock config to avoid environment variable issues
@@ -152,13 +149,7 @@ describe('listWorkers', () => {
     });
 
     it('should accept valid sort options', () => {
-      const sortOptions = [
-        'hashrate_desc',
-        'hashrate_asc',
-        'name_asc',
-        'name_desc',
-        'last_share',
-      ];
+      const sortOptions = ['hashrate_desc', 'hashrate_asc', 'name_asc', 'name_desc', 'last_share'];
 
       for (const sortBy of sortOptions) {
         const result = ListWorkersInputSchema.safeParse({ sortBy });
@@ -350,13 +341,13 @@ describe('listWorkers', () => {
 
   describe('Tool Handler', () => {
     it('should return formatted response on success', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { listWorkersTool } = await import('../../../src/tools/listWorkers.js');
 
       const mockClient = {
         listWorkers: vi.fn().mockResolvedValue(mockApiResponse),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await listWorkersTool.handler({});
 
@@ -376,7 +367,7 @@ describe('listWorkers', () => {
     });
 
     it('should handle pagination parameters', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { listWorkersTool } = await import('../../../src/tools/listWorkers.js');
 
       const mockClient = {
@@ -386,7 +377,7 @@ describe('listWorkers', () => {
           total: 150,
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await listWorkersTool.handler({ page: 2, pageSize: 50 });
 
@@ -402,7 +393,7 @@ describe('listWorkers', () => {
     });
 
     it('should pass filters to API', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { listWorkersTool } = await import('../../../src/tools/listWorkers.js');
 
       const mockClient = {
@@ -412,7 +403,7 @@ describe('listWorkers', () => {
           total: 1,
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       await listWorkersTool.handler({
         status: 'active',
@@ -430,7 +421,7 @@ describe('listWorkers', () => {
     });
 
     it('should format empty results appropriately', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { listWorkersTool } = await import('../../../src/tools/listWorkers.js');
 
       const mockClient = {
@@ -441,7 +432,7 @@ describe('listWorkers', () => {
           workers: [],
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await listWorkersTool.handler({});
 
@@ -450,39 +441,45 @@ describe('listWorkers', () => {
     });
 
     it('should return error on API failure', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { listWorkersTool } = await import('../../../src/tools/listWorkers.js');
       const { BraiinsApiError, ErrorCode } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
-        listWorkers: vi.fn().mockRejectedValue(
-          new BraiinsApiError('Unauthorized', ErrorCode.UNAUTHORIZED, 401)
-        ),
+        listWorkers: vi
+          .fn()
+          .mockRejectedValue(new BraiinsApiError('Unauthorized', ErrorCode.UNAUTHORIZED, 401)),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await listWorkersTool.handler({});
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.error).toBe(true);
       expect(errorData.code).toBe('UNAUTHORIZED');
     });
 
     it('should handle network errors gracefully', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { listWorkersTool } = await import('../../../src/tools/listWorkers.js');
       const { NetworkError } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
         listWorkers: vi.fn().mockRejectedValue(new NetworkError('Connection refused')),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await listWorkersTool.handler({});
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('NETWORK_ERROR');
     });
 
@@ -492,7 +489,10 @@ describe('listWorkers', () => {
       const result = await listWorkersTool.handler({ page: -1 });
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.error).toBe(true);
       expect(errorData.code).toBe('VALIDATION_ERROR');
     });

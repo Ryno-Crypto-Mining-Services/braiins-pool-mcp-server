@@ -13,7 +13,7 @@ import {
   GetNetworkStatsResponseSchema,
   type GetNetworkStatsResponse,
 } from '../schemas/getNetworkStatsResponse.js';
-import { getBraiinsClient } from '../api/braiinsClient.js';
+import { getCachedBraiinsClient } from '../api/cachedBraiinsClient.js';
 import { ValidationError, toBraiinsError } from '../utils/errors.js';
 import { logger } from '../utils/logger.js';
 import type { ToolDefinition } from './index.js';
@@ -159,7 +159,7 @@ async function handler(args: Record<string, unknown>): Promise<CallToolResult> {
   try {
     // Step 2: Call API
     logger.debug('Fetching network stats from API');
-    const client = getBraiinsClient();
+    const client = getCachedBraiinsClient();
     const rawData = await client.getNetworkStats();
 
     // Step 3: Validate response matches expected schema

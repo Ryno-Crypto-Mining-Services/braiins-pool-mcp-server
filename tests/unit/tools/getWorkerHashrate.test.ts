@@ -9,10 +9,10 @@ import {
 } from '../../../src/schemas/getWorkerHashrateInput.js';
 import { GetWorkerHashrateResponseSchema } from '../../../src/schemas/getWorkerHashrateResponse.js';
 
-// Mock the braiinsClient module
-vi.mock('../../../src/api/braiinsClient.js', () => ({
-  getBraiinsClient: vi.fn(),
-  resetBraiinsClient: vi.fn(),
+// Mock the cachedBraiinsClient module
+vi.mock('../../../src/api/cachedBraiinsClient.js', () => ({
+  getCachedBraiinsClient: vi.fn(),
+  resetCachedBraiinsClient: vi.fn(),
 }));
 
 // Mock config to avoid environment variable issues
@@ -258,15 +258,13 @@ describe('getWorkerHashrate', () => {
 
   describe('Tool Handler', () => {
     it('should return formatted response on success', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
-      const { getWorkerHashrateTool } = await import(
-        '../../../src/tools/getWorkerHashrate.js'
-      );
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
+      const { getWorkerHashrateTool } = await import('../../../src/tools/getWorkerHashrate.js');
 
       const mockClient = {
         getWorkerHashrate: vi.fn().mockResolvedValue(mockApiResponse),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getWorkerHashrateTool.handler({ workerId: 'worker-001' });
 
@@ -290,15 +288,13 @@ describe('getWorkerHashrate', () => {
     });
 
     it('should pass time range params to API', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
-      const { getWorkerHashrateTool } = await import(
-        '../../../src/tools/getWorkerHashrate.js'
-      );
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
+      const { getWorkerHashrateTool } = await import('../../../src/tools/getWorkerHashrate.js');
 
       const mockClient = {
         getWorkerHashrate: vi.fn().mockResolvedValue(mockApiResponse),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       await getWorkerHashrateTool.handler({
         workerId: 'worker-001',
@@ -315,10 +311,8 @@ describe('getWorkerHashrate', () => {
     });
 
     it('should handle empty data points', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
-      const { getWorkerHashrateTool } = await import(
-        '../../../src/tools/getWorkerHashrate.js'
-      );
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
+      const { getWorkerHashrateTool } = await import('../../../src/tools/getWorkerHashrate.js');
 
       const emptyResponse = {
         worker_id: 'worker-001',
@@ -328,7 +322,7 @@ describe('getWorkerHashrate', () => {
       const mockClient = {
         getWorkerHashrate: vi.fn().mockResolvedValue(emptyResponse),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getWorkerHashrateTool.handler({ workerId: 'worker-001' });
 
@@ -338,21 +332,20 @@ describe('getWorkerHashrate', () => {
     });
 
     it('should return error for missing workerId', async () => {
-      const { getWorkerHashrateTool } = await import(
-        '../../../src/tools/getWorkerHashrate.js'
-      );
+      const { getWorkerHashrateTool } = await import('../../../src/tools/getWorkerHashrate.js');
 
       const result = await getWorkerHashrateTool.handler({});
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('VALIDATION_ERROR');
     });
 
     it('should return error for invalid time range', async () => {
-      const { getWorkerHashrateTool } = await import(
-        '../../../src/tools/getWorkerHashrate.js'
-      );
+      const { getWorkerHashrateTool } = await import('../../../src/tools/getWorkerHashrate.js');
 
       const result = await getWorkerHashrateTool.handler({
         workerId: 'worker-001',
@@ -361,78 +354,75 @@ describe('getWorkerHashrate', () => {
       });
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('VALIDATION_ERROR');
     });
 
     it('should return error on API failure', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
-      const { getWorkerHashrateTool } = await import(
-        '../../../src/tools/getWorkerHashrate.js'
-      );
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
+      const { getWorkerHashrateTool } = await import('../../../src/tools/getWorkerHashrate.js');
       const { BraiinsApiError, ErrorCode } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
-        getWorkerHashrate: vi.fn().mockRejectedValue(
-          new BraiinsApiError('Worker not found', ErrorCode.NOT_FOUND, 404)
-        ),
+        getWorkerHashrate: vi
+          .fn()
+          .mockRejectedValue(new BraiinsApiError('Worker not found', ErrorCode.NOT_FOUND, 404)),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getWorkerHashrateTool.handler({ workerId: 'nonexistent' });
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('NOT_FOUND');
     });
 
     it('should handle network errors gracefully', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
-      const { getWorkerHashrateTool } = await import(
-        '../../../src/tools/getWorkerHashrate.js'
-      );
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
+      const { getWorkerHashrateTool } = await import('../../../src/tools/getWorkerHashrate.js');
       const { NetworkError } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
         getWorkerHashrate: vi.fn().mockRejectedValue(new NetworkError('Connection refused')),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getWorkerHashrateTool.handler({ workerId: 'worker-001' });
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('NETWORK_ERROR');
     });
   });
 
   describe('Tool Definition', () => {
     it('should have correct name', async () => {
-      const { getWorkerHashrateTool } = await import(
-        '../../../src/tools/getWorkerHashrate.js'
-      );
+      const { getWorkerHashrateTool } = await import('../../../src/tools/getWorkerHashrate.js');
       expect(getWorkerHashrateTool.name).toBe('getWorkerHashrate');
     });
 
     it('should have description', async () => {
-      const { getWorkerHashrateTool } = await import(
-        '../../../src/tools/getWorkerHashrate.js'
-      );
+      const { getWorkerHashrateTool } = await import('../../../src/tools/getWorkerHashrate.js');
       expect(getWorkerHashrateTool.description).toBeTruthy();
       expect(getWorkerHashrateTool.description.length).toBeGreaterThan(20);
     });
 
     it('should require workerId parameter', async () => {
-      const { getWorkerHashrateTool } = await import(
-        '../../../src/tools/getWorkerHashrate.js'
-      );
+      const { getWorkerHashrateTool } = await import('../../../src/tools/getWorkerHashrate.js');
       expect(getWorkerHashrateTool.inputSchema.required).toContain('workerId');
     });
 
     it('should define all input properties', async () => {
-      const { getWorkerHashrateTool } = await import(
-        '../../../src/tools/getWorkerHashrate.js'
-      );
+      const { getWorkerHashrateTool } = await import('../../../src/tools/getWorkerHashrate.js');
       const props = getWorkerHashrateTool.inputSchema.properties;
       expect(props).toHaveProperty('workerId');
       expect(props).toHaveProperty('from');
@@ -441,9 +431,7 @@ describe('getWorkerHashrate', () => {
     });
 
     it('should define granularity enum', async () => {
-      const { getWorkerHashrateTool } = await import(
-        '../../../src/tools/getWorkerHashrate.js'
-      );
+      const { getWorkerHashrateTool } = await import('../../../src/tools/getWorkerHashrate.js');
       const granularityProp = (
         getWorkerHashrateTool.inputSchema.properties as Record<string, unknown>
       ).granularity;

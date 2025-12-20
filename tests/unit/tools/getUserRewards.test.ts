@@ -9,10 +9,10 @@ import {
 } from '../../../src/schemas/getUserRewardsInput.js';
 import { GetUserRewardsResponseSchema } from '../../../src/schemas/getUserRewardsResponse.js';
 
-// Mock the braiinsClient module
-vi.mock('../../../src/api/braiinsClient.js', () => ({
-  getBraiinsClient: vi.fn(),
-  resetBraiinsClient: vi.fn(),
+// Mock the cachedBraiinsClient module
+vi.mock('../../../src/api/cachedBraiinsClient.js', () => ({
+  getCachedBraiinsClient: vi.fn(),
+  resetCachedBraiinsClient: vi.fn(),
 }));
 
 // Mock config to avoid environment variable issues
@@ -247,7 +247,6 @@ describe('getUserRewards', () => {
     });
 
     it('should accept valid BTC amounts with various decimal places', () => {
-      const validAmounts = ['0.1', '0.12345678', '1.0', '123.45678901'];
       // Note: Our regex is ^\d+\.\d{1,8}$ so 9 decimals would fail
       for (const amount of ['0.1', '0.12345678', '1.0']) {
         const response = {
@@ -285,13 +284,13 @@ describe('getUserRewards', () => {
 
   describe('Tool Handler', () => {
     it('should return formatted response on success', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getUserRewardsTool } = await import('../../../src/tools/getUserRewards.js');
 
       const mockClient = {
         getUserRewards: vi.fn().mockResolvedValue(mockApiResponse),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getUserRewardsTool.handler({});
 
@@ -314,13 +313,13 @@ describe('getUserRewards', () => {
     });
 
     it('should pass time range params to API', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getUserRewardsTool } = await import('../../../src/tools/getUserRewards.js');
 
       const mockClient = {
         getUserRewards: vi.fn().mockResolvedValue(mockApiResponse),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       await getUserRewardsTool.handler({
         from: '2025-01-01T00:00:00Z',
@@ -336,7 +335,7 @@ describe('getUserRewards', () => {
     });
 
     it('should handle empty data points', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getUserRewardsTool } = await import('../../../src/tools/getUserRewards.js');
 
       const emptyResponse = {
@@ -347,7 +346,7 @@ describe('getUserRewards', () => {
       const mockClient = {
         getUserRewards: vi.fn().mockResolvedValue(emptyResponse),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getUserRewardsTool.handler({});
 
@@ -365,43 +364,52 @@ describe('getUserRewards', () => {
       });
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('VALIDATION_ERROR');
     });
 
     it('should return error on API failure', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getUserRewardsTool } = await import('../../../src/tools/getUserRewards.js');
       const { BraiinsApiError, ErrorCode } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
-        getUserRewards: vi.fn().mockRejectedValue(
-          new BraiinsApiError('Unauthorized', ErrorCode.UNAUTHORIZED, 401)
-        ),
+        getUserRewards: vi
+          .fn()
+          .mockRejectedValue(new BraiinsApiError('Unauthorized', ErrorCode.UNAUTHORIZED, 401)),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getUserRewardsTool.handler({});
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('UNAUTHORIZED');
     });
 
     it('should handle network errors gracefully', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getUserRewardsTool } = await import('../../../src/tools/getUserRewards.js');
       const { NetworkError } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
         getUserRewards: vi.fn().mockRejectedValue(new NetworkError('Connection refused')),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getUserRewardsTool.handler({});
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('NETWORK_ERROR');
     });
   });

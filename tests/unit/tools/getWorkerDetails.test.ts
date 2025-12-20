@@ -6,10 +6,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { GetWorkerDetailsInputSchema } from '../../../src/schemas/getWorkerDetailsInput.js';
 import { GetWorkerDetailsResponseSchema } from '../../../src/schemas/getWorkerDetailsResponse.js';
 
-// Mock the braiinsClient module
-vi.mock('../../../src/api/braiinsClient.js', () => ({
-  getBraiinsClient: vi.fn(),
-  resetBraiinsClient: vi.fn(),
+// Mock the cachedBraiinsClient module
+vi.mock('../../../src/api/cachedBraiinsClient.js', () => ({
+  getCachedBraiinsClient: vi.fn(),
+  resetCachedBraiinsClient: vi.fn(),
 }));
 
 // Mock config to avoid environment variable issues
@@ -226,13 +226,13 @@ describe('getWorkerDetails', () => {
 
   describe('Tool Handler', () => {
     it('should return formatted response on success', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getWorkerDetailsTool } = await import('../../../src/tools/getWorkerDetails.js');
 
       const mockClient = {
         getWorkerDetails: vi.fn().mockResolvedValue(mockApiResponse),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getWorkerDetailsTool.handler({ workerId: 'worker-001' });
 
@@ -262,13 +262,13 @@ describe('getWorkerDetails', () => {
     });
 
     it('should pass workerId to API client', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getWorkerDetailsTool } = await import('../../../src/tools/getWorkerDetails.js');
 
       const mockClient = {
         getWorkerDetails: vi.fn().mockResolvedValue(mockApiResponse),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       await getWorkerDetailsTool.handler({ workerId: 'my-worker-123' });
 
@@ -276,7 +276,7 @@ describe('getWorkerDetails', () => {
     });
 
     it('should handle response without optional fields', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getWorkerDetailsTool } = await import('../../../src/tools/getWorkerDetails.js');
 
       const minimalResponse = {
@@ -293,7 +293,7 @@ describe('getWorkerDetails', () => {
       const mockClient = {
         getWorkerDetails: vi.fn().mockResolvedValue(minimalResponse),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getWorkerDetailsTool.handler({ workerId: 'worker-001' });
 
@@ -311,7 +311,10 @@ describe('getWorkerDetails', () => {
       const result = await getWorkerDetailsTool.handler({});
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.error).toBe(true);
       expect(errorData.code).toBe('VALIDATION_ERROR');
     });
@@ -322,63 +325,75 @@ describe('getWorkerDetails', () => {
       const result = await getWorkerDetailsTool.handler({ workerId: '' });
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('VALIDATION_ERROR');
     });
 
     it('should return error on API failure', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getWorkerDetailsTool } = await import('../../../src/tools/getWorkerDetails.js');
       const { BraiinsApiError, ErrorCode } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
-        getWorkerDetails: vi.fn().mockRejectedValue(
-          new BraiinsApiError('Worker not found', ErrorCode.NOT_FOUND, 404)
-        ),
+        getWorkerDetails: vi
+          .fn()
+          .mockRejectedValue(new BraiinsApiError('Worker not found', ErrorCode.NOT_FOUND, 404)),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getWorkerDetailsTool.handler({ workerId: 'nonexistent' });
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.error).toBe(true);
       expect(errorData.code).toBe('NOT_FOUND');
     });
 
     it('should return error on unauthorized', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getWorkerDetailsTool } = await import('../../../src/tools/getWorkerDetails.js');
       const { BraiinsApiError, ErrorCode } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
-        getWorkerDetails: vi.fn().mockRejectedValue(
-          new BraiinsApiError('Unauthorized', ErrorCode.UNAUTHORIZED, 401)
-        ),
+        getWorkerDetails: vi
+          .fn()
+          .mockRejectedValue(new BraiinsApiError('Unauthorized', ErrorCode.UNAUTHORIZED, 401)),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getWorkerDetailsTool.handler({ workerId: 'worker-001' });
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('UNAUTHORIZED');
     });
 
     it('should handle network errors gracefully', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getWorkerDetailsTool } = await import('../../../src/tools/getWorkerDetails.js');
       const { NetworkError } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
         getWorkerDetails: vi.fn().mockRejectedValue(new NetworkError('Connection refused')),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getWorkerDetailsTool.handler({ workerId: 'worker-001' });
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('NETWORK_ERROR');
     });
   });

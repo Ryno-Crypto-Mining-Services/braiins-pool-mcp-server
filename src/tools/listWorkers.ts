@@ -14,7 +14,7 @@ import {
   type ListWorkersResponse,
   type Worker,
 } from '../schemas/listWorkersResponse.js';
-import { getBraiinsClient } from '../api/braiinsClient.js';
+import { getCachedBraiinsClient } from '../api/cachedBraiinsClient.js';
 import { ValidationError, toBraiinsError } from '../utils/errors.js';
 import { logger } from '../utils/logger.js';
 import type { ToolDefinition } from './index.js';
@@ -155,7 +155,7 @@ async function handler(args: Record<string, unknown>): Promise<CallToolResult> {
     const apiParams = toApiParams(input);
     logger.debug('Fetching workers from API', { params: apiParams });
 
-    const client = getBraiinsClient();
+    const client = getCachedBraiinsClient();
     const rawData = await client.listWorkers(apiParams);
 
     // Step 3: Validate response matches expected schema

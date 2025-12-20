@@ -11,10 +11,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { GetPoolStatsInputSchema } from '../../../src/schemas/getPoolStatsInput.js';
 import { GetPoolStatsResponseSchema } from '../../../src/schemas/getPoolStatsResponse.js';
 
-// Mock the braiinsClient module
-vi.mock('../../../src/api/braiinsClient.js', () => ({
-  getBraiinsClient: vi.fn(),
-  resetBraiinsClient: vi.fn(),
+// Mock the cachedBraiinsClient module
+vi.mock('../../../src/api/cachedBraiinsClient.js', () => ({
+  getCachedBraiinsClient: vi.fn(),
+  resetCachedBraiinsClient: vi.fn(),
 }));
 
 // Mock config to avoid environment variable issues
@@ -284,13 +284,13 @@ describe('getPoolStats', () => {
 
   describe('Tool Handler', () => {
     it('should return formatted response on success', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getPoolStatsTool } = await import('../../../src/tools/getPoolStats.js');
 
       const mockClient = {
         getPoolStats: vi.fn().mockResolvedValue(mockApiResponse),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getPoolStatsTool.handler({});
 
@@ -308,7 +308,7 @@ describe('getPoolStats', () => {
     });
 
     it('should format luck as lucky when value >= 1.0', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getPoolStatsTool } = await import('../../../src/tools/getPoolStats.js');
 
       const mockClient = {
@@ -317,7 +317,7 @@ describe('getPoolStats', () => {
           luck: { window_blocks: 1000, value: 1.05 },
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getPoolStatsTool.handler({});
       const text = result.content[0].text;
@@ -327,7 +327,7 @@ describe('getPoolStats', () => {
     });
 
     it('should format luck as very lucky when value >= 1.1', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getPoolStatsTool } = await import('../../../src/tools/getPoolStats.js');
 
       const mockClient = {
@@ -336,7 +336,7 @@ describe('getPoolStats', () => {
           luck: { window_blocks: 1000, value: 1.15 },
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getPoolStatsTool.handler({});
       const text = result.content[0].text;
@@ -346,7 +346,7 @@ describe('getPoolStats', () => {
     });
 
     it('should format luck as unlucky when value < 0.9', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getPoolStatsTool } = await import('../../../src/tools/getPoolStats.js');
 
       const mockClient = {
@@ -355,7 +355,7 @@ describe('getPoolStats', () => {
           luck: { window_blocks: 1000, value: 0.85 },
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getPoolStatsTool.handler({});
       const text = result.content[0].text;
@@ -365,7 +365,7 @@ describe('getPoolStats', () => {
     });
 
     it('should format luck as very unlucky when value < 0.8', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getPoolStatsTool } = await import('../../../src/tools/getPoolStats.js');
 
       const mockClient = {
@@ -374,7 +374,7 @@ describe('getPoolStats', () => {
           luck: { window_blocks: 1000, value: 0.65 },
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getPoolStatsTool.handler({});
       const text = result.content[0].text;
@@ -384,7 +384,7 @@ describe('getPoolStats', () => {
     });
 
     it('should format luck as normal when value between 0.9 and 1.0', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getPoolStatsTool } = await import('../../../src/tools/getPoolStats.js');
 
       const mockClient = {
@@ -393,7 +393,7 @@ describe('getPoolStats', () => {
           luck: { window_blocks: 1000, value: 0.95 },
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getPoolStatsTool.handler({});
       const text = result.content[0].text;
@@ -403,7 +403,7 @@ describe('getPoolStats', () => {
     });
 
     it('should format hashrate correctly for different scales', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getPoolStatsTool } = await import('../../../src/tools/getPoolStats.js');
 
       // Test PH/s scale
@@ -413,7 +413,7 @@ describe('getPoolStats', () => {
           pool_hashrate: 5500000000000000, // 5.5 PH/s
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getPoolStatsTool.handler({});
       const text = result.content[0].text;
@@ -422,63 +422,72 @@ describe('getPoolStats', () => {
     });
 
     it('should return error on API failure', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getPoolStatsTool } = await import('../../../src/tools/getPoolStats.js');
       const { BraiinsApiError, ErrorCode } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
-        getPoolStats: vi.fn().mockRejectedValue(
-          new BraiinsApiError('Unauthorized', ErrorCode.UNAUTHORIZED, 401)
-        ),
+        getPoolStats: vi
+          .fn()
+          .mockRejectedValue(new BraiinsApiError('Unauthorized', ErrorCode.UNAUTHORIZED, 401)),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getPoolStatsTool.handler({});
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.error).toBe(true);
       expect(errorData.code).toBe('UNAUTHORIZED');
     });
 
     it('should handle network errors gracefully', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getPoolStatsTool } = await import('../../../src/tools/getPoolStats.js');
       const { NetworkError } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
         getPoolStats: vi.fn().mockRejectedValue(new NetworkError('Connection refused')),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getPoolStatsTool.handler({});
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('NETWORK_ERROR');
     });
 
     it('should handle rate limit errors', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getPoolStatsTool } = await import('../../../src/tools/getPoolStats.js');
       const { BraiinsApiError, ErrorCode } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
-        getPoolStats: vi.fn().mockRejectedValue(
-          new BraiinsApiError('Rate limited', ErrorCode.RATE_LIMITED, 429)
-        ),
+        getPoolStats: vi
+          .fn()
+          .mockRejectedValue(new BraiinsApiError('Rate limited', ErrorCode.RATE_LIMITED, 429)),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getPoolStatsTool.handler({});
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('RATE_LIMITED');
     });
 
     it('should return raw data on validation failure', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getPoolStatsTool } = await import('../../../src/tools/getPoolStats.js');
 
       // Return data that doesn't match schema
@@ -491,7 +500,7 @@ describe('getPoolStats', () => {
       const mockClient = {
         getPoolStats: vi.fn().mockResolvedValue(invalidData),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getPoolStatsTool.handler({});
 
@@ -507,7 +516,10 @@ describe('getPoolStats', () => {
       const result = await getPoolStatsTool.handler({ unexpected: 'param' });
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('VALIDATION_ERROR');
     });
   });
@@ -543,7 +555,7 @@ describe('getPoolStats', () => {
 
   describe('Relative Time Formatting', () => {
     it('should format time as "Just now" for recent blocks', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getPoolStatsTool } = await import('../../../src/tools/getPoolStats.js');
 
       const now = new Date();
@@ -556,7 +568,7 @@ describe('getPoolStats', () => {
           },
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getPoolStatsTool.handler({});
       const text = result.content[0].text;
@@ -565,7 +577,7 @@ describe('getPoolStats', () => {
     });
 
     it('should format time as minutes ago', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getPoolStatsTool } = await import('../../../src/tools/getPoolStats.js');
 
       const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
@@ -578,7 +590,7 @@ describe('getPoolStats', () => {
           },
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getPoolStatsTool.handler({});
       const text = result.content[0].text;
@@ -587,7 +599,7 @@ describe('getPoolStats', () => {
     });
 
     it('should format time as hours ago', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getPoolStatsTool } = await import('../../../src/tools/getPoolStats.js');
 
       const fiveHoursAgo = new Date(Date.now() - 5 * 60 * 60 * 1000);
@@ -600,7 +612,7 @@ describe('getPoolStats', () => {
           },
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getPoolStatsTool.handler({});
       const text = result.content[0].text;
@@ -609,7 +621,7 @@ describe('getPoolStats', () => {
     });
 
     it('should format time as days ago', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getPoolStatsTool } = await import('../../../src/tools/getPoolStats.js');
 
       const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
@@ -622,7 +634,7 @@ describe('getPoolStats', () => {
           },
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getPoolStatsTool.handler({});
       const text = result.content[0].text;

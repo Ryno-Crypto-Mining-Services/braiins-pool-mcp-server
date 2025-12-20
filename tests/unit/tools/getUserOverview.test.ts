@@ -6,10 +6,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { GetUserOverviewInputSchema } from '../../../src/schemas/getUserOverviewInput.js';
 import { GetUserOverviewResponseSchema } from '../../../src/schemas/getUserOverviewResponse.js';
 
-// Mock the braiinsClient module
-vi.mock('../../../src/api/braiinsClient.js', () => ({
-  getBraiinsClient: vi.fn(),
-  resetBraiinsClient: vi.fn(),
+// Mock the cachedBraiinsClient module
+vi.mock('../../../src/api/cachedBraiinsClient.js', () => ({
+  getCachedBraiinsClient: vi.fn(),
+  resetCachedBraiinsClient: vi.fn(),
 }));
 
 // Mock config to avoid environment variable issues
@@ -160,13 +160,13 @@ describe('getUserOverview', () => {
   describe('Tool Handler', () => {
     it('should return formatted response on success', async () => {
       // Import after mocks are set up
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getUserOverviewTool } = await import('../../../src/tools/getUserOverview.js');
 
       const mockClient = {
         getUserOverview: vi.fn().mockResolvedValue(mockApiResponse),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getUserOverviewTool.handler({});
 
@@ -182,41 +182,45 @@ describe('getUserOverview', () => {
     });
 
     it('should return error on API failure', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getUserOverviewTool } = await import('../../../src/tools/getUserOverview.js');
       const { BraiinsApiError, ErrorCode } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
-        getUserOverview: vi.fn().mockRejectedValue(
-          new BraiinsApiError('Unauthorized', ErrorCode.UNAUTHORIZED, 401)
-        ),
+        getUserOverview: vi
+          .fn()
+          .mockRejectedValue(new BraiinsApiError('Unauthorized', ErrorCode.UNAUTHORIZED, 401)),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getUserOverviewTool.handler({});
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.error).toBe(true);
       expect(errorData.code).toBe('UNAUTHORIZED');
     });
 
     it('should handle network errors gracefully', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getUserOverviewTool } = await import('../../../src/tools/getUserOverview.js');
       const { NetworkError } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
-        getUserOverview: vi.fn().mockRejectedValue(
-          new NetworkError('Connection refused')
-        ),
+        getUserOverview: vi.fn().mockRejectedValue(new NetworkError('Connection refused')),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getUserOverviewTool.handler({});
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('NETWORK_ERROR');
     });
   });

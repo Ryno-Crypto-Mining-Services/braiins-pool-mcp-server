@@ -11,10 +11,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { GetNetworkStatsInputSchema } from '../../../src/schemas/getNetworkStatsInput.js';
 import { GetNetworkStatsResponseSchema } from '../../../src/schemas/getNetworkStatsResponse.js';
 
-// Mock the braiinsClient module
-vi.mock('../../../src/api/braiinsClient.js', () => ({
-  getBraiinsClient: vi.fn(),
-  resetBraiinsClient: vi.fn(),
+// Mock the cachedBraiinsClient module
+vi.mock('../../../src/api/cachedBraiinsClient.js', () => ({
+  getCachedBraiinsClient: vi.fn(),
+  resetCachedBraiinsClient: vi.fn(),
 }));
 
 // Mock config to avoid environment variable issues
@@ -192,13 +192,13 @@ describe('getNetworkStats', () => {
 
   describe('Tool Handler', () => {
     it('should return formatted response on success', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getNetworkStatsTool } = await import('../../../src/tools/getNetworkStats.js');
 
       const mockClient = {
         getNetworkStats: vi.fn().mockResolvedValue(mockApiResponse),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getNetworkStatsTool.handler({});
 
@@ -214,7 +214,7 @@ describe('getNetworkStats', () => {
     });
 
     it('should format hashrate correctly for EH/s scale', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getNetworkStatsTool } = await import('../../../src/tools/getNetworkStats.js');
 
       const mockClient = {
@@ -223,7 +223,7 @@ describe('getNetworkStats', () => {
           hashrate_estimate: 750000000000000000000, // 750 EH/s
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getNetworkStatsTool.handler({});
       const text = result.content[0].text;
@@ -232,7 +232,7 @@ describe('getNetworkStats', () => {
     });
 
     it('should format difficulty in trillions', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getNetworkStatsTool } = await import('../../../src/tools/getNetworkStats.js');
 
       const mockClient = {
@@ -241,7 +241,7 @@ describe('getNetworkStats', () => {
           difficulty: 95500000000000, // 95.5 trillion
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getNetworkStatsTool.handler({});
       const text = result.content[0].text;
@@ -250,7 +250,7 @@ describe('getNetworkStats', () => {
     });
 
     it('should format difficulty in billions when appropriate', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getNetworkStatsTool } = await import('../../../src/tools/getNetworkStats.js');
 
       const mockClient = {
@@ -259,7 +259,7 @@ describe('getNetworkStats', () => {
           difficulty: 500000000000, // 500 billion
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getNetworkStatsTool.handler({});
       const text = result.content[0].text;
@@ -268,7 +268,7 @@ describe('getNetworkStats', () => {
     });
 
     it('should show "On Target" indicator when block time is normal', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getNetworkStatsTool } = await import('../../../src/tools/getNetworkStats.js');
 
       const mockClient = {
@@ -277,7 +277,7 @@ describe('getNetworkStats', () => {
           block_time_avg: 600, // exactly on target
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getNetworkStatsTool.handler({});
       const text = result.content[0].text;
@@ -286,7 +286,7 @@ describe('getNetworkStats', () => {
     });
 
     it('should show "Fast" indicator when blocks are faster than target', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getNetworkStatsTool } = await import('../../../src/tools/getNetworkStats.js');
 
       const mockClient = {
@@ -295,7 +295,7 @@ describe('getNetworkStats', () => {
           block_time_avg: 500, // much faster than target
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getNetworkStatsTool.handler({});
       const text = result.content[0].text;
@@ -304,7 +304,7 @@ describe('getNetworkStats', () => {
     });
 
     it('should show "Slow" indicator when blocks are slower than target', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getNetworkStatsTool } = await import('../../../src/tools/getNetworkStats.js');
 
       const mockClient = {
@@ -313,7 +313,7 @@ describe('getNetworkStats', () => {
           block_time_avg: 700, // much slower than target
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getNetworkStatsTool.handler({});
       const text = result.content[0].text;
@@ -322,7 +322,7 @@ describe('getNetworkStats', () => {
     });
 
     it('should format block time with minutes and seconds', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getNetworkStatsTool } = await import('../../../src/tools/getNetworkStats.js');
 
       const mockClient = {
@@ -331,7 +331,7 @@ describe('getNetworkStats', () => {
           block_time_avg: 625, // 10m 25s
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getNetworkStatsTool.handler({});
       const text = result.content[0].text;
@@ -340,63 +340,72 @@ describe('getNetworkStats', () => {
     });
 
     it('should return error on API failure', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getNetworkStatsTool } = await import('../../../src/tools/getNetworkStats.js');
       const { BraiinsApiError, ErrorCode } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
-        getNetworkStats: vi.fn().mockRejectedValue(
-          new BraiinsApiError('Unauthorized', ErrorCode.UNAUTHORIZED, 401)
-        ),
+        getNetworkStats: vi
+          .fn()
+          .mockRejectedValue(new BraiinsApiError('Unauthorized', ErrorCode.UNAUTHORIZED, 401)),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getNetworkStatsTool.handler({});
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.error).toBe(true);
       expect(errorData.code).toBe('UNAUTHORIZED');
     });
 
     it('should handle network errors gracefully', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getNetworkStatsTool } = await import('../../../src/tools/getNetworkStats.js');
       const { NetworkError } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
         getNetworkStats: vi.fn().mockRejectedValue(new NetworkError('Connection refused')),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getNetworkStatsTool.handler({});
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('NETWORK_ERROR');
     });
 
     it('should handle rate limit errors', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getNetworkStatsTool } = await import('../../../src/tools/getNetworkStats.js');
       const { BraiinsApiError, ErrorCode } = await import('../../../src/utils/errors.js');
 
       const mockClient = {
-        getNetworkStats: vi.fn().mockRejectedValue(
-          new BraiinsApiError('Rate limited', ErrorCode.RATE_LIMITED, 429)
-        ),
+        getNetworkStats: vi
+          .fn()
+          .mockRejectedValue(new BraiinsApiError('Rate limited', ErrorCode.RATE_LIMITED, 429)),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getNetworkStatsTool.handler({});
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('RATE_LIMITED');
     });
 
     it('should return raw data on validation failure', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getNetworkStatsTool } = await import('../../../src/tools/getNetworkStats.js');
 
       // Return data that doesn't match schema
@@ -409,7 +418,7 @@ describe('getNetworkStats', () => {
       const mockClient = {
         getNetworkStats: vi.fn().mockResolvedValue(invalidData),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getNetworkStatsTool.handler({});
 
@@ -425,7 +434,10 @@ describe('getNetworkStats', () => {
       const result = await getNetworkStatsTool.handler({ unexpected: 'param' });
 
       expect(result.isError).toBe(true);
-      const errorData = JSON.parse(result.content[0].text);
+      const errorData = JSON.parse(String(result.content[0].text)) as {
+        error: boolean;
+        code: string;
+      };
       expect(errorData.code).toBe('VALIDATION_ERROR');
     });
   });
@@ -461,18 +473,20 @@ describe('getNetworkStats', () => {
 
   describe('Time Until Formatting', () => {
     it('should format time until in days and hours', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getNetworkStatsTool } = await import('../../../src/tools/getNetworkStats.js');
 
       // Set next adjustment to 3 days and 5 hours from now (with buffer for test execution)
-      const future = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 5 * 60 * 60 * 1000 + 30 * 60 * 1000);
+      const future = new Date(
+        Date.now() + 3 * 24 * 60 * 60 * 1000 + 5 * 60 * 60 * 1000 + 30 * 60 * 1000
+      );
       const mockClient = {
         getNetworkStats: vi.fn().mockResolvedValue({
           ...mockApiResponse,
           next_difficulty_change_eta: future.toISOString(),
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getNetworkStatsTool.handler({});
       const text = result.content[0].text;
@@ -482,7 +496,7 @@ describe('getNetworkStats', () => {
     });
 
     it('should format time until in hours only', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getNetworkStatsTool } = await import('../../../src/tools/getNetworkStats.js');
 
       // Set next adjustment to 12 hours from now (with buffer for test execution)
@@ -493,7 +507,7 @@ describe('getNetworkStats', () => {
           next_difficulty_change_eta: future.toISOString(),
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getNetworkStatsTool.handler({});
       const text = result.content[0].text;
@@ -503,7 +517,7 @@ describe('getNetworkStats', () => {
     });
 
     it('should format time until in minutes when less than an hour', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getNetworkStatsTool } = await import('../../../src/tools/getNetworkStats.js');
 
       // Set next adjustment to 45 minutes from now (with buffer for test execution)
@@ -514,7 +528,7 @@ describe('getNetworkStats', () => {
           next_difficulty_change_eta: future.toISOString(),
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getNetworkStatsTool.handler({});
       const text = result.content[0].text;
@@ -524,7 +538,7 @@ describe('getNetworkStats', () => {
     });
 
     it('should show "Imminent" when adjustment is past or very soon', async () => {
-      const { getBraiinsClient } = await import('../../../src/api/braiinsClient.js');
+      const { getCachedBraiinsClient } = await import('../../../src/api/cachedBraiinsClient.js');
       const { getNetworkStatsTool } = await import('../../../src/tools/getNetworkStats.js');
 
       // Set next adjustment to the past
@@ -535,7 +549,7 @@ describe('getNetworkStats', () => {
           next_difficulty_change_eta: past.toISOString(),
         }),
       };
-      vi.mocked(getBraiinsClient).mockReturnValue(mockClient as never);
+      vi.mocked(getCachedBraiinsClient).mockReturnValue(mockClient as never);
 
       const result = await getNetworkStatsTool.handler({});
       const text = result.content[0].text;
