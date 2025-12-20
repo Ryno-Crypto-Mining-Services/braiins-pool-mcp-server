@@ -14,10 +14,7 @@ import { z } from 'zod';
  */
 const LastBlockSchema = z.object({
   height: z.number().int().nonnegative().describe('Block height'),
-  found_at: z
-    .string()
-    .datetime({ offset: true })
-    .describe('When block was found (ISO 8601)'),
+  found_at: z.string().datetime({ offset: true }).describe('When block was found (ISO 8601)'),
   reward: z.string().describe('Block reward in BTC'),
 });
 
@@ -46,10 +43,7 @@ export const GetPoolStatsResponseSchema = z.object({
     .describe('Number of active workers across all accounts'),
   last_block: LastBlockSchema.describe('Most recently found block'),
   luck: LuckSchema.describe('Pool luck statistics'),
-  updated_at: z
-    .string()
-    .datetime({ offset: true })
-    .describe('Last update timestamp'),
+  updated_at: z.string().datetime({ offset: true }).describe('Last update timestamp'),
 });
 
 /**

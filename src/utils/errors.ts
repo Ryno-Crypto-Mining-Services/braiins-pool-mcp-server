@@ -179,17 +179,10 @@ export function toBraiinsError(error: unknown): BraiinsError {
   }
 
   if (error !== null && error instanceof Error) {
-    return new BraiinsError(
-      error.message,
-      ErrorCode.INTERNAL_ERROR,
-      500,
-      { originalError: error.name }
-    );
+    return new BraiinsError(error.message, ErrorCode.INTERNAL_ERROR, 500, {
+      originalError: error.name,
+    });
   }
 
-  return new BraiinsError(
-    'An unknown error occurred',
-    ErrorCode.INTERNAL_ERROR,
-    500
-  );
+  return new BraiinsError('An unknown error occurred', ErrorCode.INTERNAL_ERROR, 500);
 }

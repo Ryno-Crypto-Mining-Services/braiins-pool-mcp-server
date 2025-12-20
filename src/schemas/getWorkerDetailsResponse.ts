@@ -68,14 +68,8 @@ export const GetWorkerDetailsResponseSchema = z.object({
     .datetime({ offset: true })
     .nullable()
     .describe('Last share timestamp (ISO 8601)'),
-  created_at: z
-    .string()
-    .datetime({ offset: true })
-    .describe('Worker creation timestamp'),
-  updated_at: z
-    .string()
-    .datetime({ offset: true })
-    .describe('Last update timestamp'),
+  created_at: z.string().datetime({ offset: true }).describe('Worker creation timestamp'),
+  updated_at: z.string().datetime({ offset: true }).describe('Last update timestamp'),
 });
 
 /**

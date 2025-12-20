@@ -112,10 +112,7 @@ function getBlockTimeIndicator(actual: number, target: number): string {
  * Format the complete API response for MCP output
  */
 function formatResponse(data: GetNetworkStatsResponse): string {
-  const blockTimeIndicator = getBlockTimeIndicator(
-    data.block_time_avg,
-    data.block_time_target
-  );
+  const blockTimeIndicator = getBlockTimeIndicator(data.block_time_avg, data.block_time_target);
 
   const lines: string[] = [
     `## Bitcoin Network Statistics`,

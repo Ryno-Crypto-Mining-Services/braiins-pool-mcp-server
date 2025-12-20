@@ -67,9 +67,7 @@ export type GetWorkerHashrateInput = z.infer<typeof GetWorkerHashrateInputSchema
  * Transform MCP input to API params (snake_case not needed here,
  * but we filter out undefined values)
  */
-export function toApiParams(
-  input: GetWorkerHashrateInput
-): Record<string, string> {
+export function toApiParams(input: GetWorkerHashrateInput): Record<string, string> {
   const params: Record<string, string> = {};
 
   if (input.from) {

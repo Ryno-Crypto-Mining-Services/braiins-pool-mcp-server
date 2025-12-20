@@ -21,10 +21,7 @@ const BtcAmountSchema = z
  * Single data point in rewards timeseries
  */
 export const RewardsPointSchema = z.object({
-  timestamp: z
-    .string()
-    .datetime({ offset: true })
-    .describe('Data point timestamp (ISO 8601)'),
+  timestamp: z.string().datetime({ offset: true }).describe('Data point timestamp (ISO 8601)'),
   confirmed: BtcAmountSchema.describe('Confirmed rewards for this period'),
   unconfirmed: BtcAmountSchema.describe('Unconfirmed rewards for this period'),
   payout: BtcAmountSchema.describe('Payout amount for this period'),

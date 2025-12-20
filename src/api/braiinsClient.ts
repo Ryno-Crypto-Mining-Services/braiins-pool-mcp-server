@@ -121,10 +121,9 @@ export class BraiinsClient {
   private handleApiError(error: AxiosError): BraiinsApiError | NetworkError {
     // Network error (no response received)
     if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND' || !error.response) {
-      return new NetworkError(
-        `Cannot connect to Braiins API: ${error.message}`,
-        { code: error.code }
-      );
+      return new NetworkError(`Cannot connect to Braiins API: ${error.message}`, {
+        code: error.code,
+      });
     }
 
     // API returned an error response
@@ -151,9 +150,7 @@ export class BraiinsClient {
    * @see API.md Section 5.1
    */
   async getUserOverview(): Promise<GetUserOverviewResponse> {
-    return this.retryWithBackoff(() =>
-      this.client.get<GetUserOverviewResponse>('/user/overview')
-    );
+    return this.retryWithBackoff(() => this.client.get<GetUserOverviewResponse>('/user/overview'));
   }
 
   /**
@@ -217,9 +214,7 @@ export class BraiinsClient {
    * @param params - Query parameters (from, to, granularity)
    * @see API.md Section 5.2
    */
-  async getUserRewards(
-    params: Record<string, string> = {}
-  ): Promise<GetUserRewardsResponse> {
+  async getUserRewards(params: Record<string, string> = {}): Promise<GetUserRewardsResponse> {
     return this.retryWithBackoff(() =>
       this.client.get<GetUserRewardsResponse>('/user/rewards', { params })
     );
@@ -234,9 +229,7 @@ export class BraiinsClient {
    * @see API.md Section 7.1
    */
   async getPoolStats(): Promise<GetPoolStatsResponse> {
-    return this.retryWithBackoff(() =>
-      this.client.get<GetPoolStatsResponse>('/pool/stats')
-    );
+    return this.retryWithBackoff(() => this.client.get<GetPoolStatsResponse>('/pool/stats'));
   }
 
   /**
@@ -248,9 +241,7 @@ export class BraiinsClient {
    * @see API.md Section 7.2
    */
   async getNetworkStats(): Promise<GetNetworkStatsResponse> {
-    return this.retryWithBackoff(() =>
-      this.client.get<GetNetworkStatsResponse>('/network/stats')
-    );
+    return this.retryWithBackoff(() => this.client.get<GetNetworkStatsResponse>('/network/stats'));
   }
 }
 

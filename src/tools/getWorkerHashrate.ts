@@ -8,10 +8,7 @@
  */
 
 import type { CallToolResult, TextContent } from '@modelcontextprotocol/sdk/types.js';
-import {
-  GetWorkerHashrateInputSchema,
-  toApiParams,
-} from '../schemas/getWorkerHashrateInput.js';
+import { GetWorkerHashrateInputSchema, toApiParams } from '../schemas/getWorkerHashrateInput.js';
 import {
   GetWorkerHashrateResponseSchema,
   type GetWorkerHashrateResponse,
@@ -115,14 +112,8 @@ function generateSparkline(points: HashratePoint[], width: number = 20): string 
 /**
  * Format the complete API response for MCP output
  */
-function formatResponse(
-  data: GetWorkerHashrateResponse,
-  granularity?: string
-): string {
-  const lines: string[] = [
-    `## Hashrate History: ${data.worker_id}`,
-    '',
-  ];
+function formatResponse(data: GetWorkerHashrateResponse, granularity?: string): string {
+  const lines: string[] = [`## Hashrate History: ${data.worker_id}`, ''];
 
   if (data.points.length === 0) {
     lines.push('*No hashrate data available for the specified time range.*');

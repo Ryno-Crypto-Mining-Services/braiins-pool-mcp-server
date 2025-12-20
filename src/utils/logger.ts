@@ -45,16 +45,14 @@ function formatJson(entry: LogEntry): string {
 function formatPretty(entry: LogEntry): string {
   const levelColors: Record<LogLevel, string> = {
     debug: '\x1b[36m', // cyan
-    info: '\x1b[32m',  // green
-    warn: '\x1b[33m',  // yellow
+    info: '\x1b[32m', // green
+    warn: '\x1b[33m', // yellow
     error: '\x1b[31m', // red
   };
   const reset = '\x1b[0m';
 
   const color = levelColors[entry.level];
-  const contextStr = entry.context
-    ? ` ${JSON.stringify(sanitizeContext(entry.context))}`
-    : '';
+  const contextStr = entry.context ? ` ${JSON.stringify(sanitizeContext(entry.context))}` : '';
 
   return `${entry.timestamp} ${color}[${entry.level.toUpperCase()}]${reset} ${entry.message}${contextStr}`;
 }
@@ -62,9 +60,7 @@ function formatPretty(entry: LogEntry): string {
 /**
  * Sanitize context to remove sensitive data
  */
-function sanitizeContext(
-  context?: Record<string, unknown>
-): Record<string, unknown> | undefined {
+function sanitizeContext(context?: Record<string, unknown>): Record<string, unknown> | undefined {
   if (!context) return undefined;
 
   const sensitiveKeys = [
@@ -82,9 +78,7 @@ function sanitizeContext(
 
   for (const [key, value] of Object.entries(context)) {
     const lowerKey = key.toLowerCase();
-    const isSensitive = sensitiveKeys.some((sensitive) =>
-      lowerKey.includes(sensitive)
-    );
+    const isSensitive = sensitiveKeys.some((sensitive) => lowerKey.includes(sensitive));
 
     if (isSensitive) {
       sanitized[key] = '[REDACTED]';
@@ -123,8 +117,7 @@ function writeLog(level: LogLevel, message: string, context?: Record<string, unk
     context,
   };
 
-  const formatted =
-    config.logFormat === 'json' ? formatJson(entry) : formatPretty(entry);
+  const formatted = config.logFormat === 'json' ? formatJson(entry) : formatPretty(entry);
 
   // Write to stderr to not interfere with stdio MCP transport
   console.error(formatted);

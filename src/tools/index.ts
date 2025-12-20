@@ -12,9 +12,7 @@ import { BraiinsError, ErrorCode, toBraiinsError } from '../utils/errors.js';
 /**
  * Tool handler function type - returns MCP SDK's CallToolResult
  */
-export type ToolHandler = (
-  args: Record<string, unknown>
-) => Promise<CallToolResult>;
+export type ToolHandler = (args: Record<string, unknown>) => Promise<CallToolResult>;
 
 /**
  * Internal tool definition with handler

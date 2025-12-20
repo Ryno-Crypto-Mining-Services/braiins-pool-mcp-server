@@ -18,7 +18,13 @@ export type WorkerStatus = z.infer<typeof WorkerStatusEnum>;
 /**
  * Sort options for worker list
  */
-export const WorkerSortEnum = z.enum(['hashrate_desc', 'hashrate_asc', 'name_asc', 'name_desc', 'last_share']);
+export const WorkerSortEnum = z.enum([
+  'hashrate_desc',
+  'hashrate_asc',
+  'name_asc',
+  'name_desc',
+  'last_share',
+]);
 export type WorkerSort = z.infer<typeof WorkerSortEnum>;
 
 /**
@@ -44,9 +50,9 @@ export const ListWorkersInputSchema = z.object({
     .describe('Number of workers per page (max 200)'),
 
   // Filters
-  status: WorkerStatusEnum
-    .default('all')
-    .describe('Filter by worker status: active, inactive, or all'),
+  status: WorkerStatusEnum.default('all').describe(
+    'Filter by worker status: active, inactive, or all'
+  ),
 
   search: z
     .string()
@@ -54,9 +60,7 @@ export const ListWorkersInputSchema = z.object({
     .optional()
     .describe('Search by worker name (partial match)'),
 
-  sortBy: WorkerSortEnum
-    .optional()
-    .describe('Sort order for results'),
+  sortBy: WorkerSortEnum.optional().describe('Sort order for results'),
 });
 
 /**

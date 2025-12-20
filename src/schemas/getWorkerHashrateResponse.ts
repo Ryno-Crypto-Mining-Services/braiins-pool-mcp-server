@@ -12,10 +12,7 @@ import { z } from 'zod';
  * Single data point in hashrate timeseries
  */
 export const HashratePointSchema = z.object({
-  timestamp: z
-    .string()
-    .datetime({ offset: true })
-    .describe('Data point timestamp (ISO 8601)'),
+  timestamp: z.string().datetime({ offset: true }).describe('Data point timestamp (ISO 8601)'),
   hashrate: z.number().nonnegative().describe('Hashrate in H/s at this point'),
 });
 

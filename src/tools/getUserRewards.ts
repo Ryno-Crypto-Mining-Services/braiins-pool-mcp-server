@@ -8,10 +8,7 @@
  */
 
 import type { CallToolResult, TextContent } from '@modelcontextprotocol/sdk/types.js';
-import {
-  GetUserRewardsInputSchema,
-  toApiParams,
-} from '../schemas/getUserRewardsInput.js';
+import { GetUserRewardsInputSchema, toApiParams } from '../schemas/getUserRewardsInput.js';
 import {
   GetUserRewardsResponseSchema,
   type GetUserRewardsResponse,
@@ -116,14 +113,8 @@ function generateSparkline(points: RewardsPoint[], width: number = 20): string {
 /**
  * Format the complete API response for MCP output
  */
-function formatResponse(
-  data: GetUserRewardsResponse,
-  granularity?: string
-): string {
-  const lines: string[] = [
-    `## Rewards History (${data.currency})`,
-    '',
-  ];
+function formatResponse(data: GetUserRewardsResponse, granularity?: string): string {
+  const lines: string[] = [`## Rewards History (${data.currency})`, ''];
 
   if (data.points.length === 0) {
     lines.push('*No rewards data available for the specified time range.*');
@@ -135,9 +126,7 @@ function formatResponse(
   const lastPoint = data.points[data.points.length - 1];
   const formatFn = granularity === 'hour' ? formatTimestamp : formatDate;
 
-  lines.push(
-    `**Period**: ${formatFn(firstPoint.timestamp)} → ${formatFn(lastPoint.timestamp)}`
-  );
+  lines.push(`**Period**: ${formatFn(firstPoint.timestamp)} → ${formatFn(lastPoint.timestamp)}`);
   lines.push(`**Data Points**: ${data.points.length}${granularity ? ` (${granularity})` : ''}`);
   lines.push('');
 
@@ -168,9 +157,7 @@ function formatResponse(
   lines.push(`|------|-----------|-------------|--------|`);
   for (const point of recentPoints) {
     const date = formatFn(point.timestamp);
-    lines.push(
-      `| ${date} | ${point.confirmed} | ${point.unconfirmed} | ${point.payout} |`
-    );
+    lines.push(`| ${date} | ${point.confirmed} | ${point.unconfirmed} | ${point.payout} |`);
   }
 
   if (data.points.length > 10) {

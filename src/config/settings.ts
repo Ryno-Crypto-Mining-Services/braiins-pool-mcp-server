@@ -12,9 +12,7 @@ import { z } from 'zod';
  */
 const ConfigSchema = z.object({
   // Node environment
-  nodeEnv: z
-    .enum(['development', 'production', 'test'])
-    .default('development'),
+  nodeEnv: z.enum(['development', 'production', 'test']).default('development'),
 
   // Braiins Pool API configuration
   braiinsApiBaseUrl: z
@@ -22,16 +20,10 @@ const ConfigSchema = z.object({
     .url('BRAIINS_API_BASE_URL must be a valid URL')
     .default('https://pool.braiins.com/api/v1'),
 
-  braiinsApiToken: z
-    .string()
-    .min(1, 'BRAIINS_POOL_API_TOKEN is required')
-    .optional(),
+  braiinsApiToken: z.string().min(1, 'BRAIINS_POOL_API_TOKEN is required').optional(),
 
   // Redis configuration
-  redisUrl: z
-    .string()
-    .url('REDIS_URL must be a valid URL')
-    .default('redis://localhost:6379'),
+  redisUrl: z.string().url('REDIS_URL must be a valid URL').default('redis://localhost:6379'),
 
   redisEnabled: z
     .string()
@@ -39,13 +31,9 @@ const ConfigSchema = z.object({
     .default('true'),
 
   // Logging configuration
-  logLevel: z
-    .enum(['debug', 'info', 'warn', 'error'])
-    .default('info'),
+  logLevel: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
 
-  logFormat: z
-    .enum(['json', 'pretty'])
-    .default('json'),
+  logFormat: z.enum(['json', 'pretty']).default('json'),
 
   // Rate limiting
   rateLimitRequestsPerSecond: z
