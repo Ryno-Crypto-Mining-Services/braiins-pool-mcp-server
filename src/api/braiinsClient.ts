@@ -11,6 +11,7 @@ import { logger } from '../utils/logger.js';
 import { BraiinsApiError, NetworkError } from '../utils/errors.js';
 import type { GetUserOverviewResponse } from '../schemas/getUserOverviewResponse.js';
 import type { ListWorkersResponse } from '../schemas/listWorkersResponse.js';
+import type { GetWorkerDetailsResponse } from '../schemas/getWorkerDetailsResponse.js';
 
 /**
  * Braiins API Client
@@ -163,6 +164,21 @@ export class BraiinsClient {
   async listWorkers(params: Record<string, string | number>): Promise<ListWorkersResponse> {
     return this.retryWithBackoff(() =>
       this.client.get<ListWorkersResponse>('/workers', { params })
+    );
+  }
+
+  /**
+   * Get worker details
+   *
+   * Returns detailed information for a specific worker including
+   * hardware, environment, and extended share statistics.
+   *
+   * @param workerId - Unique worker identifier
+   * @see API.md Section 6.2
+   */
+  async getWorkerDetails(workerId: string): Promise<GetWorkerDetailsResponse> {
+    return this.retryWithBackoff(() =>
+      this.client.get<GetWorkerDetailsResponse>(`/workers/${encodeURIComponent(workerId)}`)
     );
   }
 }
