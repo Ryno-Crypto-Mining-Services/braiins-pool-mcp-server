@@ -1,8 +1,25 @@
 # Braiins Pool MCP Server
 
+<!-- CI/CD Badges -->
+[![CI](https://github.com/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/actions/workflows/ci.yml)
+[![Test](https://github.com/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/actions/workflows/test.yml/badge.svg)](https://github.com/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/actions/workflows/test.yml)
+[![Build](https://github.com/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/actions/workflows/build.yml/badge.svg)](https://github.com/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/actions/workflows/build.yml)
+[![codecov](https://codecov.io/gh/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/graph/badge.svg)](https://codecov.io/gh/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server)
+
+<!-- Package Badges -->
+[![npm version](https://img.shields.io/npm/v/@ryno-crypto/braiins-pool-mcp-server.svg)](https://www.npmjs.com/package/@ryno-crypto/braiins-pool-mcp-server)
+[![npm downloads](https://img.shields.io/npm/dm/@ryno-crypto/braiins-pool-mcp-server.svg)](https://www.npmjs.com/package/@ryno-crypto/braiins-pool-mcp-server)
+[![Docker Image](https://img.shields.io/badge/Docker-ghcr.io-blue?logo=docker)](https://github.com/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/pkgs/container/braiins-pool-mcp-server)
+
+<!-- Quality Badges -->
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![MCP Protocol](https://img.shields.io/badge/MCP-Compatible-green.svg)](https://modelcontextprotocol.io)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
+[![MCP Protocol](https://img.shields.io/badge/MCP-Compatible-green.svg)](https://modelcontextprotocol.io)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-brightgreen?logo=node.js)](https://nodejs.org/)
+
+<!-- Documentation Badges -->
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server)
+[![Documentation](https://img.shields.io/badge/docs-ARCHITECTURE.md-blue)](./ARCHITECTURE.md)
 
 A Model Context Protocol (MCP) server providing seamless integration with the Braiins Pool API for Bitcoin mining operations. This server enables AI assistants like Claude, GitHub Copilot, and Cursor to interact with mining pool data, monitor performance, and manage configurations through natural language.
 
