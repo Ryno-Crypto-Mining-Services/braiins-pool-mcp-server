@@ -30,9 +30,13 @@ jobs:
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v5
+        # Don't fail on Codecov errors (secrets unavailable for Dependabot PRs)
+        if: ${{ !cancelled() }}
+        continue-on-error: true
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: Ryno-Crypto-Mining-Services/braiins-pool-mcp-server
+          fail_ci_if_error: false
 
   test-matrix:
     name: Test on Node ${{ matrix.node-version }}
