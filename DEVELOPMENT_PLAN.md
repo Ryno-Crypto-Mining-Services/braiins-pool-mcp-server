@@ -606,6 +606,37 @@ Friday Afternoon: Sprint Review & Retrospective (1.5 hours)
 
 ---
 
+## Skills Integration
+
+This project uses a **skills-first approach** for AI-assisted development. See [SKILLS_ARCHITECTURE.md](./SKILLS_ARCHITECTURE.md) for full details.
+
+### Skills to Phase Mapping
+
+| Phase | Primary Skills | Commands |
+|-------|---------------|----------|
+| Phase 1 | mcp-schema-designer, braiins-api-mapper | `/api-sync` |
+| Phase 2 | mcp-tool-builder, braiins-cache-strategist | `/mcp-tool`, `/cache-design` |
+| Phase 3 | mcp-validator, security-auditor | `/validate-tool` |
+| Phase 4 | Documentation skills | - |
+
+### Quick Reference
+
+```bash
+# Scaffold a new MCP tool (Phase 2)
+/mcp-tool getUserOverview
+
+# Design caching strategy for endpoint
+/cache-design /workers/{workerId}
+
+# Validate an implemented tool
+/validate-tool getUserOverview
+
+# Check API.md alignment
+/api-sync
+```
+
+---
+
 ## Next Steps
 
 1. ✅ **Review & Approval** (Dec 15): Project sponsor approves plan
@@ -625,4 +656,4 @@ Friday Afternoon: Sprint Review & Retrospective (1.5 hours)
 
 ---
 
-See also: [AGENTS.md](./AGENTS.md) • [ARCHITECTURE.md](./ARCHITECTURE.md) • [TODO.md](./TODO.md) • [MULTIAGENT_PLAN.md](./MULTIAGENT_PLAN.md)
+See also: [AGENTS.md](./AGENTS.md) • [ARCHITECTURE.md](./ARCHITECTURE.md) • [TODO.md](./TODO.md) • [SKILLS_ARCHITECTURE.md](./SKILLS_ARCHITECTURE.md) • [MULTIAGENT_PLAN.md](./MULTIAGENT_PLAN.md)

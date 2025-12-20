@@ -243,13 +243,30 @@ _None currently identified. Will update as issues arise._
 - `[~]` In progress
 - `[x]` Completed
 
-**Agents**:
+**Agents** (Traditional Roles):
 - **Architect**: System design, technical decisions
 - **Builder**: Feature implementation, code development
 - **Validator**: Quality assurance, testing, code review
 - **Scribe**: Documentation, communication
 - **DevOps**: Infrastructure, CI/CD, deployment
 - **Researcher**: Technology evaluation, best practices
+
+**Skills-First Approach** (Preferred):
+This project uses a skills-first paradigm. Instead of multiple agents, use a single agent with domain-specific skills. See [SKILLS_ARCHITECTURE.md](./SKILLS_ARCHITECTURE.md).
+
+| Skill | Command | Use For |
+|-------|---------|---------|
+| mcp-tool-builder | `/mcp-tool` | Implement MCP tools |
+| mcp-schema-designer | - | Design Zod schemas |
+| braiins-cache-strategist | `/cache-design` | Design caching strategy |
+| braiins-api-mapper | - | Map API endpoints |
+| mcp-validator | `/validate-tool` | Validate implementations |
+
+**Quick Commands**:
+- `/mcp-tool <name>` - Scaffold new MCP tool
+- `/validate-tool <name>` - Validate existing tool
+- `/api-sync` - Check API.md alignment
+- `/cache-design <endpoint>` - Design cache strategy
 
 ---
 
@@ -308,4 +325,4 @@ _None currently identified. Will update as issues arise._
 
 ---
 
-See also: [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md) • [AGENTS.md](./AGENTS.md) • [MULTIAGENT_PLAN.md](./MULTIAGENT_PLAN.md)
+See also: [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md) • [AGENTS.md](./AGENTS.md) • [SKILLS_ARCHITECTURE.md](./SKILLS_ARCHITECTURE.md) • [MULTIAGENT_PLAN.md](./MULTIAGENT_PLAN.md)
