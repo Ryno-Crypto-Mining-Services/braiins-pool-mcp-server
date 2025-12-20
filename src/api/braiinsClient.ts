@@ -12,6 +12,7 @@ import { BraiinsApiError, NetworkError } from '../utils/errors.js';
 import type { GetUserOverviewResponse } from '../schemas/getUserOverviewResponse.js';
 import type { ListWorkersResponse } from '../schemas/listWorkersResponse.js';
 import type { GetWorkerDetailsResponse } from '../schemas/getWorkerDetailsResponse.js';
+import type { GetWorkerHashrateResponse } from '../schemas/getWorkerHashrateResponse.js';
 
 /**
  * Braiins API Client
@@ -179,6 +180,28 @@ export class BraiinsClient {
   async getWorkerDetails(workerId: string): Promise<GetWorkerDetailsResponse> {
     return this.retryWithBackoff(() =>
       this.client.get<GetWorkerDetailsResponse>(`/workers/${encodeURIComponent(workerId)}`)
+    );
+  }
+
+  /**
+   * Get worker hashrate timeseries
+   *
+   * Returns historical hashrate data for a specific worker.
+   * Supports time range filtering and granularity options.
+   *
+   * @param workerId - Unique worker identifier
+   * @param params - Query parameters (from, to, granularity)
+   * @see API.md Section 6.3
+   */
+  async getWorkerHashrate(
+    workerId: string,
+    params: Record<string, string> = {}
+  ): Promise<GetWorkerHashrateResponse> {
+    return this.retryWithBackoff(() =>
+      this.client.get<GetWorkerHashrateResponse>(
+        `/workers/${encodeURIComponent(workerId)}/hashrate`,
+        { params }
+      )
     );
   }
 }

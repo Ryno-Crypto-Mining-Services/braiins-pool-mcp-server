@@ -139,6 +139,7 @@ export function createErrorResponse(error: BraiinsError): CallToolResult {
 import { getUserOverviewTool } from './getUserOverview.js';
 import { listWorkersTool } from './listWorkers.js';
 import { getWorkerDetailsTool } from './getWorkerDetails.js';
+import { getWorkerHashrateTool } from './getWorkerHashrate.js';
 
 // Register all tools
 registerTool(getUserOverviewTool);
@@ -149,5 +150,8 @@ tools.push(listWorkersTool);
 
 registerTool(getWorkerDetailsTool);
 tools.push(getWorkerDetailsTool);
+
+registerTool(getWorkerHashrateTool);
+tools.push(getWorkerHashrateTool);
 
 logger.debug('Tool registry initialized', { toolCount: tools.length });
