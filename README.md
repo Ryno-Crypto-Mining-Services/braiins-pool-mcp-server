@@ -134,14 +134,65 @@ npm test
 
 ### Docker Deployment
 
+#### Build Locally
+
 ```bash
-# Pull image
+# Build the Docker image
+docker build -t braiins-pool-mcp-server .
+
+# Run the container (MCP uses stdio, not HTTP ports)
+docker run --rm -i \
+  -e BRAIINS_API_KEY=your_api_key \
+  braiins-pool-mcp-server
+```
+
+#### Using Docker Compose
+
+Two Docker Compose configurations are available:
+
+| File | Description | Use Case |
+|------|-------------|----------|
+| `docker-compose.yml` | MCP server only | Standard usage |
+| `docker-compose.redis.yml` | MCP server + Redis + Redis Commander | Performance optimization with caching |
+
+**Basic Setup (No Redis)**
+
+```bash
+# Set your API key
+export BRAIINS_API_KEY=your_api_key
+
+# Start the MCP server
+docker compose up -d
+
+# View logs
+docker compose logs -f
+```
+
+**With Redis Caching**
+
+```bash
+# Set your API key
+export BRAIINS_API_KEY=your_api_key
+
+# Start MCP server with Redis and Redis Commander
+docker compose -f docker-compose.redis.yml up -d
+
+# Access Redis Commander UI
+open http://localhost:8081
+
+# View logs
+docker compose -f docker-compose.redis.yml logs -f
+```
+
+#### Pull from Docker Hub
+
+```bash
+# Pull pre-built image
 docker pull rynocrypto/braiins-pool-mcp-server:latest
 
 # Run container
-docker run -d \
+docker run --rm -i \
   -e BRAIINS_API_KEY=your_api_key \
-  -p 3000:3000 \
   rynocrypto/braiins-pool-mcp-server:latest
 ```
 

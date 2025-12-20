@@ -1,45 +1,19 @@
-# Docker Compose for Braiins Pool MCP Server development
+# Docker Compose for Braiins Pool MCP Server (without Redis)
 # Usage: docker-compose up -d
-
-version: '3.8'
+#
+# For Redis caching support, use: docker-compose -f docker-compose.redis.yml up -d
 
 services:
-  # Redis cache for API response caching
-  redis:
-    image: redis:7-alpine
-    container_name: braiins-mcp-redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
-
-  # Redis Commander - Web UI for Redis (development only)
-  redis-commander:
-    image: rediscommander/redis-commander:latest
-    container_name: braiins-mcp-redis-ui
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: braiins-pool-mcp-server:latest
+    container_name: braiins-pool-mcp
     restart: unless-stopped
     environment:
-      - REDIS_HOSTS=local:redis:6379
-    ports:
-      - "8081:8081"
-    depends_on:
-      redis:
-        condition: service_healthy
-    profiles:
-      - dev
-
-volumes:
-  redis_data:
-    name: braiins-mcp-redis-data
-
-networks:
-  default:
-    name: braiins-mcp-network
+      - NODE_ENV=production
+      - BRAIINS_API_KEY=${BRAIINS_API_KEY}
+    # MCP servers use stdio, not network ports
+    stdin_open: true
+    tty: true

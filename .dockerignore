@@ -1,0 +1,40 @@
+# Dependencies
+node_modules
+
+# Build outputs (we rebuild in container)
+dist
+coverage
+
+# Development files
+.git
+.github
+.husky
+*.md
+!README.md
+
+# Test files
+tests
+**/*.test.ts
+**/*.spec.ts
+vitest.config.ts
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+
+# Environment files (never include secrets)
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Misc
+.claude
+.cursor
+tsconfig.tsbuildinfo
