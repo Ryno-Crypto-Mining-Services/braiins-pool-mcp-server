@@ -9,7 +9,6 @@ on:
 
 permissions:
   contents: read
-  security-events: write
 
 jobs:
   lint:
@@ -76,24 +75,5 @@ jobs:
         uses: dependency-review-action@v4
         if: github.event_name == 'pull_request'
 
-  codeql:
-    name: CodeQL Analysis
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
-        with:
-          languages: javascript-typescript
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v4
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
+# Note: CodeQL analysis runs via GitHub's default code scanning setup
+# See: Settings > Security > Code security and analysis > Code scanning
