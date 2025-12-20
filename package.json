@@ -23,7 +23,7 @@
     "format:check": "prettier --check \"src/**/*.ts\"",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist coverage",
-    "prepare": "npm run build"
+    "prepare": "husky"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
@@ -38,6 +38,8 @@
     "@vitest/coverage-v8": "^4.0.16",
     "eslint": "^8.55.0",
     "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "msw": "^2.0.0",
     "nock": "^13.4.0",
     "prettier": "^3.1.0",
@@ -71,5 +73,15 @@
   "bugs": {
     "url": "https://github.com/RynoCrypto/braiins-pool-mcp-server/issues"
   },
-  "homepage": "https://github.com/RynoCrypto/braiins-pool-mcp-server#readme"
+  "homepage": "https://github.com/RynoCrypto/braiins-pool-mcp-server#readme",
+  "lint-staged": {
+    "src/**/*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "tests/**/*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  }
 }
