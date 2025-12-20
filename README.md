@@ -1,7 +1,7 @@
 # Braiins Pool MCP Server
 
 <!-- CI/CD Badges -->
-[![CI](https://github.com/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/actions/workflows/ci.yml)
+[![Quality](https://github.com/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/actions/workflows/quality.yml/badge.svg)](https://github.com/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/actions/workflows/quality.yml)
 [![Test](https://github.com/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/actions/workflows/test.yml/badge.svg)](https://github.com/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/actions/workflows/test.yml)
 [![Build](https://github.com/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/actions/workflows/build.yml/badge.svg)](https://github.com/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server/graph/badge.svg)](https://codecov.io/gh/Ryno-Crypto-Mining-Services/braiins-pool-mcp-server)
@@ -224,14 +224,13 @@ Create a `.env` file in your project root:
 ```bash
 # Required
 BRAIINS_API_KEY=your_api_key_here
-BRAIINS_API_SECRET=your_api_secret_here
 
 # Optional
-BRAIINS_API_BASE_URL=https://pool.braiins.com/api/v2
-CACHE_TTL=300
-RATE_LIMIT_MAX_REQUESTS=100
-RATE_LIMIT_WINDOW_MS=60000
+BRAIINS_API_BASE_URL=https://pool.braiins.com/api/v1
+REDIS_URL=redis://localhost:6379
+REDIS_ENABLED=true
 LOG_LEVEL=info
+LOG_FORMAT=pretty
 ```
 
 ### MCP Client Configuration
@@ -245,10 +244,9 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
   "mcpServers": {
     "braiins-pool": {
       "command": "node",
-      "args": ["/path/to/braiins-pool-mcp-server/build/index.js"],
+      "args": ["/path/to/braiins-pool-mcp-server/dist/index.js"],
       "env": {
-        "BRAIINS_API_KEY": "your_api_key",
-        "BRAIINS_API_SECRET": "your_api_secret"
+        "BRAIINS_API_KEY": "your_api_key"
       }
     }
   }
@@ -278,10 +276,10 @@ Add to `.cursorrules` or `.vscode/mcp.json`:
 ### API Key Generation
 
 1. Log in to [Braiins Pool](https://pool.braiins.com)
-2. Navigate to **Settings** → **API Access**
-3. Click **Generate New API Key**
-4. Select permissions: `read:workers`, `read:earnings`, `read:blocks`
-5. Copy the API key and secret immediately (shown only once)
+2. Navigate to **Settings** → **Access Tokens**
+3. Click **Generate New Token**
+4. Copy the API token immediately (shown only once)
+5. Set as `BRAIINS_API_KEY` environment variable
 
 ---
 

@@ -20,7 +20,8 @@ const ConfigSchema = z.object({
     .url('BRAIINS_API_BASE_URL must be a valid URL')
     .default('https://pool.braiins.com/api/v1'),
 
-  braiinsApiToken: z.string().min(1, 'BRAIINS_POOL_API_TOKEN is required').optional(),
+  // Accepts BRAIINS_API_KEY (preferred) or BRAIINS_POOL_API_TOKEN (legacy)
+  braiinsApiToken: z.string().min(1, 'BRAIINS_API_KEY is required').optional(),
 
   // Redis configuration
   redisUrl: z.string().url('REDIS_URL must be a valid URL').default('redis://localhost:6379'),
@@ -89,7 +90,7 @@ function loadConfig(): Config {
   const envConfig = {
     nodeEnv: process.env.NODE_ENV,
     braiinsApiBaseUrl: process.env.BRAIINS_API_BASE_URL,
-    braiinsApiToken: process.env.BRAIINS_POOL_API_TOKEN,
+    braiinsApiToken: process.env.BRAIINS_API_KEY || process.env.BRAIINS_POOL_API_TOKEN,
     redisUrl: process.env.REDIS_URL,
     redisEnabled: process.env.REDIS_ENABLED,
     logLevel: process.env.LOG_LEVEL,
@@ -120,7 +121,7 @@ export function validateConfig(): ConfigValidationResult {
   const envConfig = {
     nodeEnv: process.env.NODE_ENV,
     braiinsApiBaseUrl: process.env.BRAIINS_API_BASE_URL,
-    braiinsApiToken: process.env.BRAIINS_POOL_API_TOKEN,
+    braiinsApiToken: process.env.BRAIINS_API_KEY || process.env.BRAIINS_POOL_API_TOKEN,
     redisUrl: process.env.REDIS_URL,
     redisEnabled: process.env.REDIS_ENABLED,
     logLevel: process.env.LOG_LEVEL,
@@ -140,9 +141,9 @@ export function validateConfig(): ConfigValidationResult {
       .filter(Boolean);
 
     // In production, API token is required
-    const apiToken = process.env.BRAIINS_POOL_API_TOKEN;
+    const apiToken = process.env.BRAIINS_API_KEY || process.env.BRAIINS_POOL_API_TOKEN;
     if (process.env.NODE_ENV === 'production' && (apiToken === undefined || apiToken === '')) {
-      errors.push('BRAIINS_POOL_API_TOKEN is required in production');
+      errors.push('BRAIINS_API_KEY is required in production');
     }
 
     if (errors.length > 0) {
