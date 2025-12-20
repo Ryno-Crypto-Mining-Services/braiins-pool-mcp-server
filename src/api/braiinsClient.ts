@@ -15,6 +15,7 @@ import type { GetWorkerDetailsResponse } from '../schemas/getWorkerDetailsRespon
 import type { GetWorkerHashrateResponse } from '../schemas/getWorkerHashrateResponse.js';
 import type { GetUserRewardsResponse } from '../schemas/getUserRewardsResponse.js';
 import type { GetPoolStatsResponse } from '../schemas/getPoolStatsResponse.js';
+import type { GetNetworkStatsResponse } from '../schemas/getNetworkStatsResponse.js';
 
 /**
  * Braiins API Client
@@ -235,6 +236,20 @@ export class BraiinsClient {
   async getPoolStats(): Promise<GetPoolStatsResponse> {
     return this.retryWithBackoff(() =>
       this.client.get<GetPoolStatsResponse>('/pool/stats')
+    );
+  }
+
+  /**
+   * Get network statistics
+   *
+   * Returns Bitcoin network statistics including difficulty,
+   * estimated hashrate, and block timing metrics.
+   *
+   * @see API.md Section 7.2
+   */
+  async getNetworkStats(): Promise<GetNetworkStatsResponse> {
+    return this.retryWithBackoff(() =>
+      this.client.get<GetNetworkStatsResponse>('/network/stats')
     );
   }
 }
